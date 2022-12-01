@@ -2,10 +2,7 @@ package com.example.selectitdelivery.dao.entity;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 
 import java.util.HashSet;
@@ -28,9 +25,15 @@ public class AppUserEntity {
     @Column(name = "password")
     private String password;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(	name = "role_user",
             joinColumns = @JoinColumn(name = "userId"),
             inverseJoinColumns = @JoinColumn(name = "roleId"))
     private Set<RoleEntity> role = new HashSet<>();
+
+    public AppUserEntity(String email, String password, Set<RoleEntity> role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
 }
