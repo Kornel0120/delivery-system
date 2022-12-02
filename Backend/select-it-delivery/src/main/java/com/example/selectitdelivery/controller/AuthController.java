@@ -9,16 +9,20 @@ import com.example.selectitdelivery.Payload.Response.RefreshTokenResponse;
 import com.example.selectitdelivery.dao.entity.AppUserEntity;
 import com.example.selectitdelivery.dao.entity.RefreshToken;
 import com.example.selectitdelivery.dao.entity.RoleEntity;
+import com.example.selectitdelivery.dao.model.Client;
 import com.example.selectitdelivery.dao.repositories.AppUserRepository;
-import com.example.selectitdelivery.dao.repositories.AppUserRoleRepository;
 import com.example.selectitdelivery.dao.repositories.RoleRepository;
 import com.example.selectitdelivery.security.jwt.JwtUtils;
 import com.example.selectitdelivery.security.services.RefreshTokenService;
 import com.example.selectitdelivery.security.services.UserDetailsImpl;
+import com.example.selectitdelivery.service.exceptions.ClientAlreadyExistsException;
 import com.example.selectitdelivery.service.exceptions.RefreshTokenException;
+import com.example.selectitdelivery.service.implementations.ClientService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,6 +31,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -36,17 +41,18 @@ import java.util.stream.Collectors;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping(value = "/api/auth")
+@RequiredArgsConstructor
 @RestController
 @Slf4j
 public class AuthController {
+
+    private final ClientService clientService;
     @Autowired
     AuthenticationManager authenticationManager;
-    @Autowired
-    AppUserRepository appUserRepository;
-    @Autowired
-    RoleRepository roleRepository;
-    @Autowired
-    AppUserRoleRepository appUserRoleRepository;
+
+    private final AppUserRepository appUserRepository;
+
+    private final RoleRepository roleRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
     @Autowired
@@ -98,32 +104,22 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signupRequest) {
         if(appUserRepository.existsByEmail(signupRequest.getEmail())) {
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Username is already taken!"));
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: Email is already taken!"));
         }
 
         Set<RoleEntity> userRoles = new HashSet<>();
 
-        signupRequest.getRole().forEach(role -> {
-                switch (role) {
-                    case "ROLE_ADMIN":
-                        RoleEntity adminRole = roleRepository.findByRoleName("ROLE_ADMIN")
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        userRoles.add(adminRole);
-                        break;
-                    case "ROLE_EMPLOYEE":
-                        RoleEntity employeeRole = roleRepository.findByRoleName("ROLE_EMPLOYEE")
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        userRoles.add(employeeRole);
-                        break;
-                    default:
-                        RoleEntity userRole = roleRepository.findByRoleName("ROLE_USER")
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        userRoles.add(userRole);
-                }});
+        userRoles.add(roleRepository.findByRoleName("ROLE_USER").get());
 
-        AppUserEntity newAppUserEntity = new AppUserEntity(signupRequest.getEmail(),passwordEncoder.encode(signupRequest.getPassword()),userRoles);
+        AppUserEntity newAppUser = new AppUserEntity(signupRequest.getEmail(),passwordEncoder.encode(signupRequest.getPassword()),userRoles);
 
-        appUserRepository.save(newAppUserEntity);
+        Client newClient = new Client(newAppUser,signupRequest.getFirstName(),signupRequest.getLastName(),signupRequest.getPhone());
+
+        try {
+            clientService.record(newClient);
+        } catch (ClientAlreadyExistsException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
     }

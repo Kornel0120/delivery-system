@@ -12,4 +12,6 @@ public interface IAppUserService {
     Collection<AppUser> readAll();
     AppUser modify(AppUser appUser) throws AppUserNotFoundException;
     void delete(AppUser appUser) throws AppUserNotFoundException;
+
+    boolean existsByEmail(String email);
 }

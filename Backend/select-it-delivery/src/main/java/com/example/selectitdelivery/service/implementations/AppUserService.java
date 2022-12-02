@@ -81,4 +81,9 @@ public class AppUserService implements IAppUserService {
 
         appUserRepository.delete(convertModelToEntity(appUser));
     }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return appUserRepository.existsByEmail(email);
+    }
 }

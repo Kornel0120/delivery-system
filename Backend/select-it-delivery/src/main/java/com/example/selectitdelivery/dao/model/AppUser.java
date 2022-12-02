@@ -16,4 +16,10 @@ public class AppUser {
     private String email;
     private String password;
     private Set<RoleEntity> role = new HashSet<>();
+
+    public AppUser(String email, String password, Set<RoleEntity> role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
 }

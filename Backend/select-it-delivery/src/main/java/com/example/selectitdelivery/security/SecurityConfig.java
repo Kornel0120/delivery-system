@@ -64,7 +64,7 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .requestMatchers(HttpMethod.POST, "/api/auth/**", "/error")
+                .requestMatchers(HttpMethod.POST, "/api/auth/**")
                 .permitAll()
                 .requestMatchers("/",
                         "/favicon.ico",
@@ -76,8 +76,14 @@ public class SecurityConfig {
                         "/**/*.css",
                         "/**/*.js",
                         "/logged",
-                        "/api/test/all")
+                        "/error")
                 .permitAll()
+                .requestMatchers("/api/appUser/**", "/api/employee/**")
+                .hasAnyAuthority("ROLE_ADMIN")
+                .requestMatchers("/api/client/**")
+                .hasAnyAuthority("ROLE_ADMIN","ROLE_CLIENT")
+                .requestMatchers("/api/shipmentStatus/**")
+                .hasAnyAuthority("ROLE_ADMIN","ROLE_EMPLOYEE")
                 .anyRequest()
                 .authenticated()
                 .and()
