@@ -1,6 +1,5 @@
 package com.example.selectitdelivery.dao.model;
 
-import jakarta.persistence.Column;
 import lombok.*;
 
 @Getter

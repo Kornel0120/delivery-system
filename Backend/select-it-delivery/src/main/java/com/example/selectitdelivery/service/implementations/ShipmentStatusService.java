@@ -1,6 +1,5 @@
 package com.example.selectitdelivery.service.implementations;
 
-import com.example.selectitdelivery.dao.entity.ShipmentEntity;
 import com.example.selectitdelivery.dao.entity.ShipmentStatusCatalogEntity;
 import com.example.selectitdelivery.dao.entity.ShipmentStatusEntity;
 import com.example.selectitdelivery.dao.model.ShipmentStatus;

@@ -1,7 +1,6 @@
 package com.example.selectitdelivery.security.services;
 
 import com.example.selectitdelivery.dao.entity.AppUserEntity;
-import com.example.selectitdelivery.dao.entity.RoleEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.security.core.GrantedAuthority;

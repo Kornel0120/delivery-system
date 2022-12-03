@@ -62,6 +62,7 @@ public class AuthController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+
         Authentication authentication = authenticationManager
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
 
@@ -75,6 +76,17 @@ public class AuthController {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
+
+        if(refreshTokenService.isUserHasARefreshToken(userDetails.getId()) &&
+            refreshTokenService.verifyExpiration(refreshTokenService.findByToken(
+                refreshTokenService.findRefreshTokenByUserId(userDetails.getId())).get()) != null) {
+           return ResponseEntity.badRequest().body(new MessageResponse("User already logged in!"));
+        }
+
+        if(refreshTokenService.isUserHasARefreshToken(userDetails.getId())) {
+            refreshTokenService.verifyExpiration(refreshTokenService.findByToken(
+                    refreshTokenService.findRefreshTokenByUserId(userDetails.getId())).get());
+        }
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 

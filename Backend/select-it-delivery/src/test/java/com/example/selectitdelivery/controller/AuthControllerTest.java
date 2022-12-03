@@ -2,18 +2,13 @@ package com.example.selectitdelivery.controller;
 
 import com.example.selectitdelivery.Payload.Request.SignupRequest;
 import com.example.selectitdelivery.Payload.Response.MessageResponse;
-import com.example.selectitdelivery.Payload.Response.UserModifyResponse;
 import com.example.selectitdelivery.controller.dto.ClientDto;
-import com.example.selectitdelivery.controller.dto.ClientMapper;
 import com.example.selectitdelivery.dao.entity.AppUserEntity;
 import com.example.selectitdelivery.dao.entity.RoleEntity;
 import com.example.selectitdelivery.dao.model.Client;
 import com.example.selectitdelivery.dao.repositories.AppUserRepository;
 import com.example.selectitdelivery.dao.repositories.RoleRepository;
-import com.example.selectitdelivery.security.jwt.JwtUtils;
 import com.example.selectitdelivery.service.exceptions.ClientAlreadyExistsException;
-import com.example.selectitdelivery.service.exceptions.ClientNotFoundException;
-import com.example.selectitdelivery.service.implementations.AppUserService;
 import com.example.selectitdelivery.service.implementations.ClientService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,9 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -33,7 +26,6 @@ import java.util.Set;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,26 +43,8 @@ public class AuthControllerTest {
     PasswordEncoder passwordEncoder;
 
     @Mock
-    ClientMapper clientMapper;
-
-    @Mock
     RoleRepository roleRepository;
 
-    @Mock
-    JwtUtils jwtUtils;
-
-    /*private final ClientService clientService;
-    @Autowired
-    AuthenticationManager authenticationManager;
-    @Autowired
-    AppUserRepository appUserRepository;
-    @Autowired
-    RoleRepository roleRepository;
-    @Autowired
-    PasswordEncoder passwordEncoder;
-    @Autowired
-    JwtUtils jwtUtils;
-    @Autowired*/
 
     @BeforeEach
     public void setup() {

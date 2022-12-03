@@ -5,15 +5,16 @@ import com.example.selectitdelivery.dao.repositories.AppUserRepository;
 import com.example.selectitdelivery.dao.repositories.RefreshTokenRepository;
 import com.example.selectitdelivery.service.exceptions.RefreshTokenException;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class RefreshTokenService {
 
@@ -44,18 +45,23 @@ public class RefreshTokenService {
     public RefreshToken verifyExpiration(RefreshToken token) {
         if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(token);
-            throw new RefreshTokenException(token.getRefreshTokenValue(), "Refresh token was expired. Please make a new signin request");
+            throw new RefreshTokenException(token.getRefreshTokenValue(), "The refresh token expired on " + token.getExpiryDate().toString() +". Please make a new signin request");
         }
 
         return token;
     }
 
     public String findRefreshTokenByUserId(long appUserId) {
+        log.error("findRefreshTokenByUserId: {}",appUserId);
         return refreshTokenRepository.findByUserUserId(appUserId).getRefreshTokenValue();
     }
 
+    public boolean isUserHasARefreshToken(long appUserId) {
+        return refreshTokenRepository.findByUserUserId(appUserId) != null;
+    }
+
     @Transactional
-    public int deleteByUserId(Long userId) {
-        return refreshTokenRepository.deleteByUser(userRepository.findById(userId).get());
+    public void deleteByUserId(Long userId) {
+        refreshTokenRepository.deleteByUser(userRepository.findById(userId).get());
     }
 }
