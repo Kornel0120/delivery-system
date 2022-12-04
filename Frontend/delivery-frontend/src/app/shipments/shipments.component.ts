@@ -57,7 +57,6 @@ export class ShipmentsComponent implements OnInit {
   }
 
   public getShipment() {
-    console.log("this.route.snapshot.data: ", this.route.snapshot.data);
     this.shipmentService.get(this.route.snapshot.data['id']).subscribe((response:ShipmentStatus) => {
       this.shipmentStatus = response;
     });
@@ -117,9 +116,6 @@ export class ShipmentsComponent implements OnInit {
     button.style.display = 'none';
     button.setAttribute('data-toggle', 'modal');
     this.getShipmentStatuses();
-
-
-
    
     console.log('deliveryMethod: ', PickUpDateMethod[this.pickUpDateMethod])
     if (mode === 'deliver') {

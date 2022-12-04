@@ -11,7 +11,6 @@ import { ApiService, AuthGuardService, ProfileService, ShipmentService, Shipment
   ],
   providers: [
     authInterceptorProviders,
-    //{ provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     ApiService,
     AuthGuardService,
     ShipmentService,

@@ -13,7 +13,6 @@ export class NoAuthGuardService {
 
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    console.log("AuthGuard");
     this.userService.populate();
     return this.userService.isAuthenticated.pipe(take(1), map(isAuth => !isAuth));
   }

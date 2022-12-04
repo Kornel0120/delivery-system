@@ -33,7 +33,7 @@ export class AuthInterceptor implements HttpInterceptor {
       headersConfig[TOKEN_HEADER_KEY] = `Bearer ${token}`;
     }
 
-    const request = req.clone({ setHeaders: headersConfig });
+    const request = req.clone({ setHeaders: headersConfig }); 
     return next.handle(request).pipe(catchError(error => {
       if (error instanceof HttpErrorResponse) {
         if(error.error instanceof ErrorEvent) {

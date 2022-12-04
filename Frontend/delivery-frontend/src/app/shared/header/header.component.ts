@@ -22,8 +22,6 @@ export class HeaderComponent implements OnInit {
         if(this.currentUser.roles != undefined) {
           this.isAdmin = this.currentUser?.roles.includes('ROLE_ADMIN');
         }
-        console.log("isAdmin header: ", this.isAdmin);
-        console.log("header: ", this.currentUser.email)
       }
     )
   }

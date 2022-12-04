@@ -10,7 +10,6 @@ import { UserService } from '../core/services/user.service';
   styleUrls: ['./auth.component.css']
 })
 export class AuthComponent implements OnInit {
-
   authType: String = '';
   title: String = '';
   errors: Errors = {errors: {}};
@@ -34,7 +33,6 @@ export class AuthComponent implements OnInit {
       next: data => {
         this.authType = data[data.length - 1].path;
         this.title = (this.authType === 'login') ? 'Sign in' : 'Sign up';
-        console.log("auth.component OnInit! ", this.authType);
         if(this.authType === 'register') {
           this.authForm.addControl('email', new FormControl());
         }
@@ -45,7 +43,6 @@ export class AuthComponent implements OnInit {
   submitForm() {
     this.isSubmitting = true;
     this.errors = {errors: {}};
-    console.log("auth submitFOrm")
     const credentials = this.authForm.value;
     this.userService.attemptAuth(this.authType, credentials).subscribe({
       next: data => {this.router.navigateByUrl('/shipments')},

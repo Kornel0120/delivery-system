@@ -6,7 +6,7 @@ import { ShipmentsResolverService } from './shipments-resolver.service';
 import { MdbDropdownModule } from 'mdb-angular-ui-kit/dropdown';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input'
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [ShipmentsComponent],

@@ -38,7 +38,7 @@ A felhasználó manuálisan is kitud jelentkezni, ekkor a funkció kiüríti a s
 
 Bejelentkezett felhasználó az összes csomagot letudja kérdezni, melyet a shipments oldalon tud megtekinteni egy táblázat formájában. A csomagok rendelkeznek mérettel, mely az adatbázisban is tárolódik azonban a frontend táblázatában ez nem kerül megjelenítésre.
 
-A Pick up date oszlop a frontend táblázatában a legkésőbbi felvételi dátumot jelzi ha a csomag státusz delivered. Ha a státusz picked up akkor azt a dátumot írja amikor az ügyfél felvette a csomagot.
+
 
 Ezen oldal kinézete eltérő attól függően milyen jogosultásggal rendelkezik a felhasználó. Például Employee vagy Admin role-al rendelkező felhasználó tud csomagot leadni csomagautomatához, de egy User jogosultásggal rendelkező felhasználó csak felvenni tudja a csomagot.
 
