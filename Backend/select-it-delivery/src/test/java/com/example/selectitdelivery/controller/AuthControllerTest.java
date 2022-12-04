@@ -52,7 +52,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    void createEmployeeHappyPath() throws ClientAlreadyExistsException {
+    void registerHappyPath() throws ClientAlreadyExistsException {
         Client client = TestDataProvider.getClient();
         AppUserEntity newAppUser = new AppUserEntity("ClientTest@Test.com", "TestPw", Set.of(new RoleEntity(3,"ROLE_USER")));
         SignupRequest signupRequest = new SignupRequest(
@@ -75,7 +75,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    void createEmployeeBadRequestOnTakenEmail() {
+    void registerBadRequestOnTakenEmail() {
         Client client = TestDataProvider.getClient();
         SignupRequest signupRequest = new SignupRequest(
                 client.getUser().getEmail(),
@@ -93,7 +93,7 @@ public class AuthControllerTest {
     }
 
     @Test
-    void createThrowsEmployeeAlreadyExistsException() throws ClientAlreadyExistsException {
+    void registerThrowsAppUserAlreadyExistsException() throws ClientAlreadyExistsException {
         Client client = TestDataProvider.getClient();
         AppUserEntity newAppUser = new AppUserEntity("ClientTest@Test.com", "TestPw", Set.of(new RoleEntity(3,"ROLE_USER")));
         SignupRequest signupRequest = new SignupRequest(

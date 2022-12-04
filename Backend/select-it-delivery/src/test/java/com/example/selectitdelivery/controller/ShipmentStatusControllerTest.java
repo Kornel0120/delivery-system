@@ -43,7 +43,7 @@ public class ShipmentStatusControllerTest {
         when(shipmentStatusService.readAll()).thenReturn(List.of(TestDataProvider.getShipmentStatus()));
         when(shipmentStatusMapper.shipmentStatusToShipmentStatusDto(any())).thenReturn(TestDataProvider.getShipmentStatusDto());
         Collection<ShipmentStatusDto> expected = List.of(TestDataProvider.getShipmentStatusDto());
-        Collection<ShipmentStatusDto> actual = shipmentStatusController.getUsers();
+        Collection<ShipmentStatusDto> actual = shipmentStatusController.getShipments();
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 

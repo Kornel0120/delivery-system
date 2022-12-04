@@ -58,6 +58,15 @@ public class EmployeeService implements IEmployeeService {
     }
 
     @Override
+    public Employee readByUserId(long userId) throws EmployeeNotFoundException {
+        if(employeeRepository.readByUserUserId(userId).isEmpty()) {
+            throw new EmployeeNotFoundException();
+        }
+
+        return convertEntityToModel(employeeRepository.readByUserUserId(userId).get());
+    }
+
+    @Override
     public Collection<Employee> readAll() {
         return employeeRepository.findAll()
                 .stream()

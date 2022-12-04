@@ -9,6 +9,7 @@ import java.util.Collection;
 public interface IEmployeeService {
     Employee record(Employee employee) throws EmployeeAlreadyExistsException;
     Employee readById(long id) throws EmployeeNotFoundException;
+    Employee readByUserId(long userId) throws EmployeeNotFoundException;
     Collection<Employee> readAll();
     Employee modify(Employee employee) throws EmployeeNotFoundException;
     void delete(Employee employee) throws EmployeeNotFoundException;

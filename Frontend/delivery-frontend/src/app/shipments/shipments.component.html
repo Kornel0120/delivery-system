@@ -1,0 +1,102 @@
+
+<div class="shipmentStatus-page" id="main-container">
+    <div class="user-info">
+      <div class="container">
+        <div class="row">
+          <div class="col-xs-12 col-md-10 offset-md-1" >
+            <div *ngIf="currentUser?.roles?.includes('ROLE_ADMIN') || currentUser?.roles?.includes('ROLE_EMPLOYEE')" class="form-group">
+              <h4>Ways to enter the pickup date</h4>
+              <mat-form-field appearance="fill">
+                <mat-label>Choose an option</mat-label>
+                <mat-select [(ngModel)]="pickUpDateMethod">
+                  <mat-option *ngFor="let method of availableMethods" value="{{method}}">
+                    {{getMethodLabel(method)}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                  <tr>
+                      <th scope="col">Delivery Status</th>
+                      <th scope="col">Package Point</th>
+                      <th scope="col">Pick up date</th>
+                      <th scope="col">Price</th>
+                      <th scope="col">Deliver button</th>
+                  </tr>
+                </thead>
+                <tr *ngFor="let ss of shipments">
+                    <td>{{ss.status.statusName}}</td>
+                    <td>{{ss.shipment.packagePoint.postalCode}} {{ss.shipment.packagePoint.city}} {{ss.shipment.packagePoint.address}}</td>
+                    <td *ngIf="ss.pickUpUntil !== null">{{ss.pickUpUntil  | date: 'yyyy-MM-dd'}}</td>
+                    <td>
+                      <ul style="list-style-type: none;">
+                        <li>
+                          Products price: {{ss.shipment.productsPrice}}
+                        </li>
+                        <li>
+                          Delivery cost: {{ss.shipment.deliveryCost}}
+                        </li>
+                        <li>
+                         Final price: {{ss.shipment.deliveryCost + ss.shipment.productsPrice}}
+                        </li>
+                      </ul>
+                    </td>
+                    <td>
+                      <a *ngIf="ss.status.statusName != shipmentStatusesEnum.PickedUp && currentUser?.userId === ss.shipment.client.user.userId" (click)="onPickUpPackage(ss)" class="btn btn-primary tooltips" data-placement="top" data-toggle="tooltip" data-original-title="Deliver"><i class="fa fa-check"></i> </a>
+                      <a *ngIf="ss.status.statusName != shipmentStatusesEnum.Delivered && !currentUser?.roles?.includes('ROLE_USER')" (click)="onOpenModal(ss, 'deliver')" class="btn btn-primary tooltips" data-placement="top" data-toggle="tooltip" data-original-title="Deliver"><i class="fa fa-check"></i> </a>
+                    </td>
+                </tr>
+              </table>
+            </div> 
+        </div>
+      </div>
+    </div>
+</div>
+
+<!--modal with date input field-->
+<div class="modal fade" id="updateShipmentStatusModal" tabindex="-1" role="dialog" aria-labelledby="shipmentStatusEditModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+     <div class="modal-content">
+        <div class="modal-header">
+           <h5 class="modal-title" id="updateShipmentStatusModal">Deliver to {{editShipmentStatus?.shipment?.packagePoint?.postalCode}} {{editShipmentStatus?.shipment?.packagePoint?.city}} {{editShipmentStatus?.shipment?.packagePoint?.address}}</h5>
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+           <span aria-hidden="true">&times;</span>
+           </button>
+        </div>
+        <div *ngIf="currentUser?.roles?.includes('ROLE_ADMIN') || currentUser?.roles?.includes('ROLE_EMPLOYEE')" class="modal-body">
+           <form #editForm="ngForm">
+            <input type="hidden" ngModel="{{editShipmentStatus?.shipment?.shipmentId}}" name="shipmentId" class="form-control" id="shipmentId" placeholder="id">
+            <div class="form-group">
+              <h4>Shipment status</h4>
+              <mat-form-field appearance="fill">
+                <mat-label>Choose an option</mat-label>
+                <mat-select ngModel="{{shipmentStatusModifyRequest.shipmentStatusCatalogName}}" name="shipmentStatusCatalogName" class="form-control" id="shipmentStatusCatalogName">
+                  <mat-option *ngFor="let s of shipmentStatuses" value="{{s.statusName}}">{{s.statusName}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+              <div *ngIf="pickUpDateMethod === pickUpDateMethodEnum.FromCalendar" class="form-group">
+                  <label for="pickUpDate">Pick up date</label>
+                  <input type="Date" ngModel="{{shipmentStatusModifyRequest.pickUpUntil}}" value ="{{ today | date: 'yyyy-MM-dd'}}" name="pickUpUntil" class="form-control" id="pickUpUntil" aria-describedby="emailHelp" placeholder="Pick Up Until">
+              </div>
+              <div [hidden]="pickUpDateMethod !== pickUpDateMethodEnum.FromCalendar" class="form-group">
+                <input type="hidden" ngModel="{{shipmentStatusModifyRequest.pickUpUntil}}" value ="{{ today | date: 'yyyy-MM-dd'}}" name="pickUpUntil" class="form-control" id="pickUpUntil" aria-describedby="emailHelp" placeholder="Pick Up Until">
+            </div>
+              <div *ngIf="pickUpDateMethod === pickUpDateMethodEnum.SpecificDays" class="form-group">
+                <label for="pickUpDate">Enter how many days the package can be picked up. (5-30 days)</label>
+                <input type="number" min="5" max="30" oninput="validity.valid||(value='')"  [(ngModel)]="pickUpDays" name="pickUpUntilDays" class="form-control" id="pickUpUntil" aria-describedby="emailHelp" placeholder="Days">
+            </div>
+            <div *ngIf="pickUpDateMethod === pickUpDateMethodEnum.AsAString" class="form-group">
+              <label for="pickUpDate">Pick up date</label>
+              <input type="text" ui-date="{dateFormat: 'yyyy-mm-dd'}" ui-date-format="yyyy-mm-dd" min="10" max="13" [(ngModel)]="stringDate" name="pickUpDateText" class="form-control" id="pickUpDateText" aria-describedby="emailHelp" placeholder="Days">
+            </div>
+              <div class="modal-footer">
+                 <button type="button" id="update-user-form" data-dismiss="modal" class="btn btn-secondary">Close</button>
+                 <button (click)="getModalValue(editForm.value)" data-dismiss="modal" class="btn btn-primary" >Deliver</button>
+              </div>
+           </form>
+        </div>
+     </div>
+  </div>
+</div>

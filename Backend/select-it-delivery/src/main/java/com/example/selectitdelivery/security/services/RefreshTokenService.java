@@ -57,7 +57,11 @@ public class RefreshTokenService {
     }
 
     public boolean isUserHasARefreshToken(long appUserId) {
-        return refreshTokenRepository.findByUserUserId(appUserId) != null;
+        if(refreshTokenRepository.findByUserUserId(appUserId) != null)
+        {
+            return true;
+        }
+        return false;
     }
 
     @Transactional

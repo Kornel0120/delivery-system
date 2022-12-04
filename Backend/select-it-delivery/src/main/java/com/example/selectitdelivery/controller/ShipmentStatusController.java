@@ -13,6 +13,7 @@ import com.example.selectitdelivery.service.exceptions.ShipmentStatusNotFoundExc
 import com.example.selectitdelivery.service.implementations.ShipmentStatusService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RequestMapping("/api/shipmentStatus")
 @RequiredArgsConstructor
 @RestController
@@ -31,8 +33,7 @@ public class ShipmentStatusController {
     private final ShipmentStatusMapper shipmentStatusMapper;
 
     @GetMapping(value = "/all")
-    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_EMPLOYEE')")
-    public Collection<ShipmentStatusDto> getUsers() {
+    public Collection<ShipmentStatusDto> getShipments() {
         return shipmentStatusService.readAll()
                 .stream()
                 .map(shipmentStatusMapper::shipmentStatusToShipmentStatusDto)
@@ -64,7 +65,8 @@ public class ShipmentStatusController {
     @PutMapping(value = "/modify")
     @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<?> modify(@Valid @RequestBody ShipmentStatusModifyRequest updateRequestShipmentStatusModifyRequest) {
-
+        log.info("shipmentStatusModifyRequest: {}", updateRequestShipmentStatusModifyRequest.getPickUpUntil());
+        log.info("shipmentStatusModifyRequest: {}", updateRequestShipmentStatusModifyRequest.getPickUpUntil());
         try {
             ShipmentStatus request = shipmentStatusService.readById(updateRequestShipmentStatusModifyRequest.getShipmentId());
             ShipmentStatusCatalog requestedShipmentStatusCatalog = shipmentStatusService.readStatusCatalogByStatusName(updateRequestShipmentStatusModifyRequest.getShipmentStatusCatalogName());

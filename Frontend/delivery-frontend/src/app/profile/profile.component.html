@@ -1,0 +1,20 @@
+<div class="profile-page">
+
+    <div class="user-info">
+      <div class="container">
+        <div class="row">
+  
+          <div class="col-xs-12 col-md-10 offset-md-1" >
+            <h4>Email: {{ profile?.email }}</h4>
+            <h5>Full name: {{ profile?.firstName}} {{profile?.lastName}}</h5>
+            <h5>Phonenumber: {{ profile?.phone }}</h5>
+            </div> 
+
+          <button class="btn btn-outline-danger"
+            (click)="logout()">
+            Click here to logout.
+          </button>
+        </div>
+      </div>
+    </div>
+</div>

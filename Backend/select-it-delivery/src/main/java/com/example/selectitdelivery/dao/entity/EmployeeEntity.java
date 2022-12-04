@@ -1,6 +1,5 @@
 package com.example.selectitdelivery.dao.entity;
 
-import com.example.selectitdelivery.dao.compositeKeys.RefreshTokenCompositeKey;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -56,6 +56,15 @@ public class AppUserService implements IAppUserService {
     }
 
     @Override
+    public AppUser readByEmail(String email) throws AppUserNotFoundException {
+        if(appUserRepository.findByEmail(email).isEmpty()) {
+            throw new AppUserNotFoundException();
+        }
+
+        return convertEntityToModel(appUserRepository.findByEmail(email).get());
+    }
+
+    @Override
     public Collection<AppUser> readAll() {
         return appUserRepository.findAll()
                 .stream()

@@ -6,17 +6,21 @@ import com.example.selectitdelivery.Payload.Request.SignupRequest;
 import com.example.selectitdelivery.Payload.Response.JwtResponse;
 import com.example.selectitdelivery.Payload.Response.MessageResponse;
 import com.example.selectitdelivery.Payload.Response.RefreshTokenResponse;
+import com.example.selectitdelivery.Payload.Response.UserWithTokensResponse;
 import com.example.selectitdelivery.dao.entity.AppUserEntity;
 import com.example.selectitdelivery.dao.entity.RefreshToken;
 import com.example.selectitdelivery.dao.entity.RoleEntity;
+import com.example.selectitdelivery.dao.model.AppUser;
 import com.example.selectitdelivery.dao.model.Client;
 import com.example.selectitdelivery.dao.repositories.AppUserRepository;
 import com.example.selectitdelivery.dao.repositories.RoleRepository;
 import com.example.selectitdelivery.security.jwt.JwtUtils;
 import com.example.selectitdelivery.security.services.RefreshTokenService;
 import com.example.selectitdelivery.security.services.UserDetailsImpl;
+import com.example.selectitdelivery.service.exceptions.AppUserNotFoundException;
 import com.example.selectitdelivery.service.exceptions.ClientAlreadyExistsException;
 import com.example.selectitdelivery.service.exceptions.RefreshTokenException;
+import com.example.selectitdelivery.service.implementations.AppUserService;
 import com.example.selectitdelivery.service.implementations.ClientService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -49,6 +54,8 @@ public class AuthController {
     private final ClientService clientService;
     @Autowired
     AuthenticationManager authenticationManager;
+
+    private final AppUserService appUserService;
 
     private final AppUserRepository appUserRepository;
 
@@ -77,15 +84,16 @@ public class AuthController {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
+        if(refreshTokenService.isUserHasARefreshToken(userDetails.getId())) {
+            log.error("hasrefreshtoken: {}", refreshTokenService.isUserHasARefreshToken(userDetails.getId()));
+            log.error("hasrefreshtoken: {}", userDetails.getId());
+           refreshTokenService.deleteByUserId(userDetails.getId());
+        }
+
         if(refreshTokenService.isUserHasARefreshToken(userDetails.getId()) &&
             refreshTokenService.verifyExpiration(refreshTokenService.findByToken(
                 refreshTokenService.findRefreshTokenByUserId(userDetails.getId())).get()) != null) {
            return ResponseEntity.badRequest().body(new MessageResponse("User already logged in!"));
-        }
-
-        if(refreshTokenService.isUserHasARefreshToken(userDetails.getId())) {
-            refreshTokenService.verifyExpiration(refreshTokenService.findByToken(
-                    refreshTokenService.findRefreshTokenByUserId(userDetails.getId())).get());
         }
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
@@ -146,4 +154,30 @@ public class AuthController {
         return ResponseEntity.ok(new MessageResponse("Log out successful!"));
     }
 
+    @GetMapping(value = "/user")
+    @PreAuthorize("hasRole('ROLE_ADMIN') or hasRole('ROLE_EMPLOYEE') or hasRole('ROLE_USER')")
+    public ResponseEntity<?> getUser(@RequestHeader(value = "Authorization") String authorization) {
+        log.info(authorization.replace("Bearer ", ""));
+
+        try {
+            log.info("Username: {}", jwtUtils.getEmailFromJwtToken(authorization.replace("Bearer ", "")));
+            AppUser user = appUserService.readByEmail(jwtUtils.getEmailFromJwtToken(authorization.replace("Bearer ", "")));
+
+            UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            List<String> roles = user.getRole()
+                    .stream()
+                    .map(RoleEntity::getRoleName)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(new UserWithTokensResponse(
+                    userDetails,
+                    authorization.split(" ")[1],
+                    refreshTokenService.findRefreshTokenByUserId(user.getUserId()),
+                    roles
+            ));
+        } catch (AppUserNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
 }

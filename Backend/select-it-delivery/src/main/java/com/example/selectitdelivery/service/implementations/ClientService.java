@@ -58,6 +58,15 @@ public class ClientService implements IClientService {
     }
 
     @Override
+    public Client readByUserId(long userId) throws ClientNotFoundException {
+        if(clientRepository.readByUserUserId(userId).isEmpty()) {
+            throw new ClientNotFoundException();
+        }
+
+        return convertEntityToModel(clientRepository.readByUserUserId(userId).get());
+    }
+
+    @Override
     public Collection<Client> readAll() {
         return clientRepository.findAll()
                 .stream()
