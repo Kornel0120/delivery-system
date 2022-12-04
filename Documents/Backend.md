@@ -1,4 +1,4 @@
-#Backend
+# Backend
 
 Framework: Spring boot
 IDE: Intellij
@@ -7,9 +7,9 @@ Port: 8080
 
 Használt dependency-k: Jpa,Hibernate,Lombok,Spring security,Jwt
 
-##Megvalósult funkciók:
+## Megvalósult funkciók:
 
-##Regisztráció
+## Regisztráció
 
 Két regisztrációs funkció került implementálásra.
 
@@ -18,7 +18,7 @@ Publikus regisztráció: Ezzel a regisztrációs fukncióval alapértelmezetten 
 Admin regisztráció: Ezt a regisztrációs fuknciót csak admin jogosultsággal rendelkező felhasználó használhatja és megadhatja azt, hogy milyen jogosultsággal rendelkezzen az új felhasználó. Jogosultságok közül rendelkezhet Admin,Employee és User jogosultsággal.
 Ezzel a funkcióval tudunk futárt vagy admint regisztrálni.
 
-##Bejelentkezés
+## Bejelentkezés
 
 Login funkció során email címmel és jelszóval ellenőrizzük a belépni kivánó egyén identitását. Ha valamelyik hibás akkor egyértelműen nem engedjük belépni.
 Sikeres bejelentkezés után a bejelentkezett felhasználó megkapja az access tokenjét és a refresh tokenjét is. A refresh token itt eltárolódik egy adatbázis táblában is.
@@ -33,11 +33,11 @@ Access token 10 percig érvényes míg a refresh token megközelítőleg 8 órá
 | Employee    | Employee@Employee.com 	| 123456 |
 | User        | User@User.com 			| 123456 |
 
-##Token refresh
+## Token refresh
 
 Ha a felhasználónak lejár az access tokenje akkor a refresh token elküldésével és validálásával új access tokent generálunk a felhasználó számára.
 
-##Csomagok kezelése
+## Csomagok kezelése
 
 Lekérdezhető az összes csomag, amely a frontenden lévő shipments oldalnál kerül alkalmazásra.
 
@@ -54,31 +54,31 @@ Nem felhasznált funkciók:
 
 A fejlesztés kezdeténél szerettem volna ha frontenden van lehetőség csomagot létrehozni és lekérdezni is.
 
-##Csomag státuszok
+## Csomag státuszok
 
 Lekérdezhetőek a létező státuszok is, amellyel a frotnend csomagkézbesítő modal-ján lévő legördülő menü töltődik fel.
 
-##Felhasználók profiljának lekérdezése email alapján
+## Felhasználók profiljának lekérdezése email alapján
 
 Ez a funkció a frontenden található profil oldalra ad adatot. Mindhárom jogosultsággal elérhető.
 
-##Dolgozókra és ügyfelekre vonatkozó crud műveletek
+## Dolgozókra és ügyfelekre vonatkozó crud műveletek
 
 readAll,readById,create,update,delete -> csak Admin jogosultsággal használhatóak.
 
 Ezek a funkciók nem kerültek alkalmazásra a frontenden.
 
-##Saját Kivételek
+## Saját Kivételek
 
 A kivételekre nem fektettem nagy hangsúlyt, a refreshtoken exception-t leszámítva a kivételek csak kiterjesztik a kivétel osztályt. 
 
-#Test
+# Test
 
-##Manuális tesztek
+## Manuális tesztek
 
 Manuális teszteket postman alkalmazással végeztem melyek közül pár tesztről képet is készítettem. Ezek a képek a Postman mappában találhatóak.
 
-##Unit tesztek
+## Unit tesztek
 
 Unit tesztek készültek a controllerekre és servicekre, azonban azoknál funkcióknál amelyeket a frontend fejlesztés során implementáltam és a feljesztés kezdeténél nem volt tervben a unit testek elmaradtak.
 

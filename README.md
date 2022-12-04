@@ -1,6 +1,5 @@
 # Delivery system
 
-
 ## Használt technológiák
 
 Backend: Spring boot
